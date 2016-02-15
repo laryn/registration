@@ -167,11 +167,13 @@ function registration_form($form, &$form_state, Registration $registration) {
 
   if ($host && entity_access('view', $registration->entity_type, $host)) {
     $uri = entity_uri($registration->entity_type, $host);
-    $form['actions']['cancel'] = array(
-      '#type' => 'link',
-      '#title' => t('Cancel'),
-      '#href' => $uri['path'],
-    );
+    if(isset($uri['path'])){
+      $form['actions']['cancel'] = array(
+        '#type' => 'link',
+        '#title' => t('Cancel'),
+        '#href' => $uri['path'],
+      );
+    }
   }
   $form['#registration_settings'] = $settings;
 
