@@ -17,7 +17,7 @@ function registration_form($form, &$form_state, Registration $registration) {
   $user = $wrapper->user->value();
   $host = $wrapper->entity->value();
   $state = $wrapper->state->value();
-  $type = $wrapper->type->value();
+  $type = $wrapper->getBundle();
 
   $form_state['registration'] = $registration;
 
