@@ -282,17 +282,20 @@ function registration_form_submit($form, &$form_state) {
 
   switch ($form_state['values']['who_is_registering']) {
     case REGISTRATION_REGISTRANT_TYPE_ANON:
+      $registration->user_uid = NULL;
       $registration->anon_mail = trim($form_state['values']['anon_mail']);
       break;
 
     case REGISTRATION_REGISTRANT_TYPE_ME:
       global $user;
       $registration->user_uid = $user->uid;
+      $registration->anon_mail = '';
       break;
 
     case REGISTRATION_REGISTRANT_TYPE_USER:
       if ($reg_user = user_load_by_name($form_state['values']['user'])) {
         $registration->user_uid = $reg_user->uid;
+        $registration->anon_mail = '';
       }
       break;
   }
