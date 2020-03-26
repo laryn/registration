@@ -1,7 +1,8 @@
 name = Registration API Test
 description = Support module for Registration API (Hooks)
 package = Registration
-core = 7.x
+backdrop = 1.x
+type = module
 
 dependencies[] = registration
 hidden = TRUE

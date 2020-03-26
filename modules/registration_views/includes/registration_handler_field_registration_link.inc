@@ -8,7 +8,10 @@ class registration_handler_field_registration_link extends views_handler_field_e
 
   function option_definition() {
     $options = parent::option_definition();
-    $options['text'] = array('default' => '', 'translatable' => TRUE);
+    $options['text'] = array(
+      'default' => '',
+      'translatable' => TRUE,
+    );
     return $options;
   }
 

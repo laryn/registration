@@ -11,7 +11,7 @@
 function registration_views_views_api() {
   return array(
     'api' => 2,
-    'path' => drupal_get_path('module', 'registration_views') . '/includes',
+    'path' => backdrop_get_path('module', 'registration_views') . '/includes',
   );
 }
 
@@ -362,7 +362,26 @@ class RegistrationViewsHandlerStateEdit extends views_handler_field {
       registration_save($registration);
     }
 
-    drupal_set_message(t('Updated @num registration states.', array('@num' => count($updates))));
+    backdrop_set_message(t('Updated @num registration states.', array('@num' => count($updates))));
+  }
+
+  /**
+   * Implements hook_autoload_info().
+   */
+  function registration_views_autoload_info() {
+    return array(
+      'registration_handler_field_entity_capacity_total' => 'includes/registration_handler_field_entity_capacity_total.inc',
+      'registration_handler_field_entity_capacity_used' => 'includes/registration_handler_field_entity_capacity_used.inc',
+      'registration_handler_field_entity_datetime' => 'includes/registration_handler_field_entity_datetime.inc',
+      'registration_handler_field_entity_registration_status' => 'includes/registration_handler_field_entity_registration_status.inc',
+      'registration_handler_field_entity_settings_link' => 'includes/registration_handler_field_entity_settings_link.inc',
+      'registration_handler_field_registration_link' => 'includes/registration_handler_field_registration_link.inc',
+      'registration_handler_field_registration_link_delete' => 'includes/registration_handler_field_registration_link_delete.inc',
+      'registration_handler_field_registration_link_edit' => 'includes/registration_handler_field_registration_link_edit.inc',
+      'registration_handler_relationship' => 'includes/registration_handler_relationship.inc',
+      'RegistrationViewsController' => 'registration_views.module',
+      'RegistrationViewsHandlerStateEdit' => 'registration_views.module',
+    );
   }
 
 }

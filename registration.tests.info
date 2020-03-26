@@ -1,0 +1,18 @@
+[RegistrationTestCase]
+name = RegistrationTestCase
+description = RegistrationTestCase
+group = registration
+file = tests/registration.test
+
+[RegistrationStandardTestCase]
+name = Registration module
+description = Test Registration module.
+group = Registration
+file = tests/registration.test
+
+[RegistrationAPITestCase]
+name = Registration API
+description = Test hooks provided by Registration.
+group = Registration
+file = tests/registration.test
+

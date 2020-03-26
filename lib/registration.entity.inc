@@ -10,8 +10,7 @@
  */
 class Registration extends Entity {
 
-  public
-    $registration_id,
+  public $registration_id,
     $type,
     $entity_id,
     $entity_type,
@@ -31,8 +30,8 @@ class Registration extends Entity {
     $host = $wrapper->entity->value();
     if ($host) {
       return t('Registration for !title', array(
-          '!title' => entity_label($this->entity_type, $host),
-        )
+        '!title' => entity_label($this->entity_type, $host),
+      )
       );
     }
     return '';
@@ -71,7 +70,7 @@ class Registration extends Entity {
     );
 
     // Link to host entity.
-    if(isset($host_uri['path'])){
+    if (isset($host_uri['path'])) {
       $host_entity_link_label = (isset($host_entity_type_info['bundles'][$host_entity_bundle]['label'])) ? '<div class="field-label">' . $host_entity_type_info['bundles'][$host_entity_bundle]['label'] . '</div>' : '';
 
       $build['host_entity_link'] = array(
@@ -196,7 +195,7 @@ class Registration extends Entity {
    * Determine registrant type relative to a given account.
    *
    * @object $account
-   *   A Drupal user
+   *   A Backdrop user
    *
    * @return string|NULL
    *   Can be me, user, anon or NULL if account is empty and no anon email set.

@@ -16,7 +16,7 @@ class registration_handler_field_registration_link_delete extends registration_h
 
     $this->options['alter']['make_link'] = TRUE;
     $this->options['alter']['path'] = "registration/{$entity->registration_id}/delete";
-    $this->options['alter']['query'] = drupal_get_destination();
+    $this->options['alter']['query'] = backdrop_get_destination();
 
     $text = !empty($this->options['text']) ? $this->options['text'] : t('delete');
     return $text;

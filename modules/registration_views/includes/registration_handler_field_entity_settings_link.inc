@@ -18,7 +18,7 @@ class registration_handler_field_entity_settings_link extends registration_handl
 
     $this->options['alter']['make_link'] = TRUE;
     $this->options['alter']['path'] = $uri['path'] . '/registrations/settings';
-    $this->options['alter']['query'] = drupal_get_destination();
+    $this->options['alter']['query'] = backdrop_get_destination();
 
     $text = !empty($this->options['text']) ? $this->options['text'] : t('settings');
     return $text;

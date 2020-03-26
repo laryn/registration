@@ -32,7 +32,7 @@ function registration_field_info() {
           'settings' => array(
             'maximum_spaces' => 1,
             'multiple_registrations' => -1,
-            'from_address' => variable_get('site_mail', ini_get('sendmail_from')),
+            'from_address' => config_get('system.performance', 'site_mail'),
           ),
         ),
       ),
@@ -195,12 +195,15 @@ function registration_field_formatter_settings_form($field, $instance, $view_mod
 
     // Store a key so we can store/retrieve translated strings for this field
     // formatter instance.
-    $element['i18n_string_key'] = array('#type' => 'value', '#value' => implode(':', array(
-      $instance['entity_type'],
-      $instance['bundle'],
-      $view_mode,
-      $instance['field_name'],
-    )));
+    $element['i18n_string_key'] = array(
+      '#type' => 'value',
+      '#value' => implode(':', array(
+        $instance['entity_type'],
+        $instance['bundle'],
+        $view_mode,
+        $instance['field_name'],
+      )),
+    );
   }
 
   // Since we have translatable strings, we'll need to register them when the
@@ -271,12 +274,12 @@ function registration_field_formatter_view($entity_type, $entity, $field, $insta
           $element[0] = array(
             '#markup' => theme('registration_link',
               array(
-                'label' => $label,
-                'path' => $uri['path'] . '/register',
-                'registration type' => $reg_type,
-                'entity_type' => $entity_type,
-                'entity' => $entity,
-              )
+              'label' => $label,
+              'path' => $uri['path'] . '/register',
+              'registration type' => $reg_type,
+              'entity_type' => $entity_type,
+              'entity' => $entity,
+            )
             ),
           );
         }
@@ -290,7 +293,7 @@ function registration_field_formatter_view($entity_type, $entity, $field, $insta
             'entity_id' => $entity_id,
             'type' => $reg_type->name,
           ));
-          $element[0] = drupal_get_form('registration_form', $registration);
+          $element[0] = backdrop_get_form('registration_form', $registration);
         }
         break;
 
@@ -359,14 +362,14 @@ function registration_form_field_ui_field_edit_form_validate(&$form, &$form_stat
 
     // If sending a reminder, ensure date and template are set.
     if ($default_settings['reminder']['send_reminder']
-      && (empty($default_settings['reminder']['reminder_settings']['reminder_date']) ||
+       && (empty($default_settings['reminder']['reminder_settings']['reminder_date']) ||
         empty($default_settings['reminder']['reminder_settings']['reminder_template']))) {
       form_set_error($base_elem_key . 'reminder][send_reminder', t('If sending a reminder, provide a date and template.'));
     }
 
     // Validate reminder date.
     if (!empty($default_settings['reminder']['reminder_settings']['reminder_date'])
-      && strtotime($default_settings['reminder']['reminder_settings']['reminder_date']) === FALSE) {
+       && strtotime($default_settings['reminder']['reminder_settings']['reminder_date']) === FALSE) {
       form_set_error($base_elem_key . 'reminder][reminder_settings][reminder_date', t('Reminder date is invalid.'));
     }
   }

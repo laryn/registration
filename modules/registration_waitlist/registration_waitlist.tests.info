@@ -1,0 +1,6 @@
+[RegistrationWaitlistTestCase]
+name = Registration Wait List module
+description = Test Registration Wait List module.
+group = Registration
+file = registration_waitlist.test
+

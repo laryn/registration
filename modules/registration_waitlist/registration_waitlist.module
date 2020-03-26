@@ -117,8 +117,8 @@ function registration_waitlist_entity_presave($entity, $type) {
       if (in_array($entity->state, $active_states)) {
         // Check that the old state (if there is one) is not already active
         if ((isset($entity->original) && !in_array($entity->original->state, $active_states))
-          || (!isset($entity->original)) ) {
-          drupal_set_message(t('Registration placed on the wait list.'), 'status');
+            || (!isset($entity->original)) ) {
+          backdrop_set_message(t('Registration placed on the wait list.'), 'status');
 
           // Set the registration state to waitlist
           $waitlist_state = registration_get_states(REGISTRATION_WAITLIST_STATE);
@@ -145,8 +145,8 @@ function registration_waitlist_is_active($entity_type, $entity_id, &$errors = ar
 
   // Not unlimited capacity
   if ($capacity
-    && isset($settings['settings']['registration_waitlist_enable'])
-    && $settings['settings']['registration_waitlist_enable']) {
+      && isset($settings['settings']['registration_waitlist_enable'])
+      && $settings['settings']['registration_waitlist_enable']) {
 
     if (in_array(t(REGISTRATION_INSUFFICIENT_SPACES_MESSAGE), $errors)) {
       $active = TRUE;
@@ -176,4 +176,12 @@ function registration_waitlist_is_active($entity_type, $entity_id, &$errors = ar
   }
 
   return $active;
+}
+
+/**
+ * Implements hook_autoload_info().
+ */
+function registration_waitlist_autoload_info() {
+  return array(
+  );
 }

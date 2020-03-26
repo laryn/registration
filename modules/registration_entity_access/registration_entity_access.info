@@ -1,6 +1,7 @@
 name = Registration Entity Access
 description = Provides per entity access control for registration.
 package = Registration
-core = 7.x
+backdrop = 1.x
+type = module
 
 dependencies[] = registration
