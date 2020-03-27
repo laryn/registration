@@ -211,7 +211,7 @@ function registration_menu() {
     $type = $instance['entity_type'];
     if (!in_array($type, array('registration', 'registration_type'))) {
       $hide_register_tab = isset($instance['settings']['hide_register_tab']) && $instance['settings']['hide_register_tab'];
-      $items[$type . '/%entity_object/register'] = array(
+      $items[$type . '/%entity_plus_object/register'] = array(
         'load arguments' => array($type),
         'title' => 'Register',
         'page callback' => 'registration_register_page',
@@ -220,7 +220,7 @@ function registration_menu() {
         'access arguments' => array(0, 1),
         'type' => $hide_register_tab ? MENU_CALLBACK : MENU_LOCAL_TASK,
       );
-      $items[$type . '/%entity_object/registrations'] = array(
+      $items[$type . '/%entity_plus_object/registrations'] = array(
         'load arguments' => array($type),
         'title' => 'Manage Registrations',
         'page callback' => 'registration_registrations_page',
@@ -229,7 +229,7 @@ function registration_menu() {
         'access arguments' => array(0, 1),
         'type' => MENU_LOCAL_TASK,
       );
-      $items[$type . '/%entity_object/registrations/list'] = array(
+      $items[$type . '/%entity_plus_object/registrations/list'] = array(
         'load arguments' => array($type),
         'title' => 'Registrations',
         'page callback' => 'registration_registrations_page',
@@ -238,7 +238,7 @@ function registration_menu() {
         'access arguments' => array(0, 1),
         'type' => MENU_DEFAULT_LOCAL_TASK,
       );
-      $items[$type . '/%entity_object/registrations/settings'] = array(
+      $items[$type . '/%entity_plus_object/registrations/settings'] = array(
         'load arguments' => array($type),
         'title' => 'Settings',
         'page callback' => 'registration_entity_settings_page',
@@ -248,7 +248,7 @@ function registration_menu() {
         'weight' => 9,
         'type' => MENU_LOCAL_TASK,
       );
-      $items[$type . '/%entity_object/registrations/broadcast'] = array(
+      $items[$type . '/%entity_plus_object/registrations/broadcast'] = array(
         'load arguments' => array($type),
         'title' => 'Email Registrants',
         'page callback' => 'backdrop_get_form',
@@ -1033,7 +1033,32 @@ function registration_theme() {
  * properties render consistently with fields.
  */
 function theme_registration_property_field($variables) {
-  return theme_field($variables);
+  return registration_theme_field($variables);
+}
+
+function registration_theme_field($variables) {
+  $output = '';
+
+  // Render the label, if it's not hidden.
+  if (!$variables['label_hidden']) {
+    $output .= '<div class="field-label">' . $variables['label'] . ':&nbsp;</div>';
+  }
+
+  // Render the items.
+  $content_attributes = (isset($variables['content_attributes'])) ? backdrop_attributes($variables['content_attributes']) : '';
+  $output .= '<div class="field-items"' . $content_attributes . '>';
+  foreach ($variables['items'] as $delta => $item) {
+    $classes = 'field-item ' . ($delta % 2 ? 'odd' : 'even');
+    $item_attributes = (!empty($variables['item_attributes'][$delta])) ? backdrop_attributes($variables['item_attributes'][$delta]) : '';
+    $output .= '<div class="' . $classes . '"' . $item_attributes . '>' . backdrop_render($item) . '</div>';
+  }
+  $output .= '</div>';
+
+  // Render the top-level DIV.
+  $attributes = !empty($variables['attributes']) ? backdrop_attributes($variables['attributes']) : '';
+  $output = '<div class="' . $variables['classes'] . '"' . $attributes . '>' . $output . '</div>';
+
+  return $output;
 }
 
 /**

@@ -122,13 +122,15 @@ function registration_form($form, &$form_state, Registration $registration) {
   }
 
   $form['count'] = array(
-    '#type' => 'textfield',
+    '#type' => 'number',
+    '#min' => 1,
+    '#step' => 1,
+    '#maxlength' => 4,
     '#title' => t('Spaces'),
     '#description' => $description,
     '#default_value' => isset($registration->count) ? $registration->count : 1,
     '#size' => backdrop_strlen($remaining),
     '#access' => (isset($settings['settings']['maximum_spaces']) && $settings['settings']['maximum_spaces'] == 1) ? FALSE : TRUE,
-    '#element_validate' => array('element_validate_integer_positive', '_registration_validate_space_request'),
   );
 
   $default_state = registration_get_default_state($type);
@@ -677,7 +679,7 @@ function registration_entity_settings_form($form, &$form_state, $settings, $enti
     '#title' => t('From Address'),
     '#description' => t('From email address to use for confirmations, reminders, and broadcast emails.'),
     '#required' => TRUE,
-    '#default_value' => isset($settings['settings']['from_address']) ? $settings['settings']['from_address'] : config_get('system.performance', 'site_mail'),
+    '#default_value' => isset($settings['settings']['from_address']) ? $settings['settings']['from_address'] : config_get('system.core', 'site_mail'),
   );
 
   $form['settings']['confirmation'] = array(

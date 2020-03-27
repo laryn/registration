@@ -44,7 +44,8 @@ class Registration extends Entity {
    *   Render array for a registration entity.
    */
   public function buildContent($view_mode = 'full', $langcode = NULL) {
-    $build = parent::buildContent($view_mode, $langcode);
+    // $build = parent::buildContent($view_mode, $langcode);
+    //$build = entity_get_controller('registration')->buildContent($this, $view_mode, $langcode);
     $wrapper = entity_metadata_wrapper('registration', $this);
 
     $host_entity_type_info = entity_get_info($this->entity_type);
@@ -157,6 +158,7 @@ class Registration extends Entity {
       '#classes' => 'field field-label-inline clearfix',
     );
 
+
     return $build;
   }
 
@@ -234,14 +236,21 @@ class Registration extends Entity {
    * Implements EntityInterface::label().
    */
   public function label() {
-    return $this->registration_id;
+    return $this->defaultLabel();
   }
 
   /**
    * Implements EntityInterface::uri().
    */
   public function uri() {
-    return array();
+    return $this->defaultUri();
+  }
+
+  /**
+   * View a registration entity.
+   */
+  public function view($view_mode) {
+    return entity_get_controller('registration')->view(array($this), $view_mode);
   }
 
 }

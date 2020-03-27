@@ -120,7 +120,7 @@ class RegistrationStandardTestCase extends RegistrationTestCase {
     $entity = &$this->host_entity;
 
     // Field created.
-    $this->assertTrue(isset($this->field['id']), t('Registration field created'), 'Registration');
+    $this->assertTrue(isset($this->field['field_name']), t('Registration field created'), 'Registration');
 
     // Instance created.
     $read_instance = field_read_instance($this->host_entity_type, $field_name, $entity->type);
