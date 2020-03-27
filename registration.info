@@ -6,4 +6,5 @@ type = module
 configure = admin/structure/registration
 
 dependencies[] = entity
-
+dependencies[] = entity_plus
+dependencies[] = entity_ui

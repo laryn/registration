@@ -122,7 +122,7 @@ function registration_waitlist_entity_presave($entity, $type) {
 
           // Set the registration state to waitlist
           $waitlist_state = registration_get_states(REGISTRATION_WAITLIST_STATE);
-          $entity->state = $waitlist_state->identifier();
+          $entity->state = $waitlist_state->id();
         }
       }
     }
@@ -163,7 +163,7 @@ function registration_waitlist_is_active($entity_type, $entity_id, &$errors = ar
       $query->addExpression('sum(count)', 'count');
       $query->condition('entity_id', $entity_id);
       $query->condition('entity_type', $entity_type);
-      $query->condition('state', $waitlist_state->identifier());
+      $query->condition('state', $waitlist_state->id());
       $result = $query->execute();
       $waitlist_count = $result->fetchField();
       $waitlist_count = ($waitlist_count == '') ? 0 : $waitlist_count;

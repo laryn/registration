@@ -291,7 +291,7 @@ function registration_menu() {
  * Similar to user_pass_rehash().
  */
 function registration_anonymous_access_hash($registration, $options = array(), $name = "", $type = "") {
-  return backdrop_hmac_base64($registration->created . $registration->identifier(), backdrop_get_hash_salt() . $registration->anon_mail);
+  return backdrop_hmac_base64($registration->created . $registration->id(), backdrop_get_hash_salt() . $registration->anon_mail);
 }
 
 /**
@@ -310,7 +310,7 @@ function registration_anonymous_link_get($registration, $options = array(), $nam
  * Helper function to run a hashed URL through a permissions check first.
  */
 function registration_access_check_redirect($registration, $function) {
-  backdrop_goto('registration/' . $registration->identifier() . '/' . $function);
+  backdrop_goto('registration/' . $registration->id() . '/' . $function);
 }
 
 /**
@@ -958,7 +958,7 @@ function registration_entity_delete($entity, $entity_type) {
           ->fieldCondition($field_name, 'registration_type', $entity->name)
           ->execute();
         foreach ($result as $host_entity_type => $entities) {
-          $entities = entity_load($host_entity_type, array_keys($entities));
+          $entities = entity_load_multiple($host_entity_type, array_keys($entities));
           foreach ($entities as $entity_id => $host_entity) {
             $host_entity->{$field_name}[LANGUAGE_NONE][0] = NULL;
             entity_save($host_entity_type, $host_entity);
@@ -1135,7 +1135,7 @@ function registration_send_broadcast($entity_type, $entity_id, $subject, $messag
 
       $recipients[] = $wrapper->mail->value();
 
-      $entity = entity_load_single($entity_type, $entity_id);
+      $entity = entity_load($entity_type, $entity_id);
       if (module_exists('token')) {
         $message = token_replace($message_template, array(
           $entity_type => $entity,
@@ -1220,7 +1220,7 @@ function registration_cron() {
     ->fetchAllAssoc('entity_id');
 
   foreach ($results as $result) {
-    $entity = entity_load_single($result->entity_type, $result->entity_id);
+    $entity = entity_load($result->entity_type, $result->entity_id);
     $message = $result->reminder_template;
     $subject = t('Reminder for !label', array('!label' => entity_label($result->entity_type, $entity)));
     registration_send_broadcast($result->entity_type, $result->entity_id, $subject, $message);
@@ -1293,7 +1293,7 @@ function registration_status($entity_type, $entity_id, $reset = FALSE, $spaces =
     return $checked[$entity_type][$entity_id]['status'];
   }
 
-  $entity = entity_load_single($entity_type, $entity_id);
+  $entity = entity_load($entity_type, $entity_id);
   $registration_type = registration_get_entity_registration_type($entity_type, $entity);
 
   // The host entity does not have registrations enabled.
@@ -1658,7 +1658,7 @@ function registration_states($conditions = array()) {
   }
 
   if ($results = $query->execute()) {
-    $states = entity_load($entity_type, array_keys($results[$entity_type]));
+    $states = entity_load_multiple($entity_type, array_keys($results[$entity_type]));
   }
 
   return $states;
@@ -1673,7 +1673,7 @@ function registration_get_active_states() {
   $active = array();
   $states = registration_states(array('active' => TRUE));
   foreach ($states as $state) {
-    $active[] = $state->identifier();
+    $active[] = $state->id();
   }
   return $active;
 }
@@ -1687,7 +1687,7 @@ function registration_get_held_states() {
   $held = array();
   $states = registration_states(array('held' => TRUE));
   foreach ($states as $state) {
-    $held[] = $state->identifier();
+    $held[] = $state->id();
   }
   return $held;
 }
@@ -1739,7 +1739,7 @@ function registration_get_states_options($conditions = array()) {
   $states = registration_states($conditions);
 
   foreach ($states as $state) {
-    $options[$state->identifier()] = t('@state', array('@state' => entity_label('registration_state', $state)));
+    $options[$state->id()] = t('@state', array('@state' => entity_label('registration_state', $state)));
   }
 
   return $options;
@@ -1751,7 +1751,7 @@ function registration_get_states_options($conditions = array()) {
  * @see registration_entity_property_info().
  */
 function registration_property_host_get(Registration $registration, array $options, $property_name, $entity_type) {
-  $entity = entity_load_single($registration->entity_type, $registration->entity_id);
+  $entity = entity_load($registration->entity_type, $registration->entity_id);
   return entity_metadata_wrapper($registration->entity_type, $entity);
 }
 
@@ -1771,7 +1771,7 @@ function registration_property_host_set(Registration $registration, $name, $valu
  */
 function registration_property_author_get(Registration $registration, array $options, $property_name, $entity_type) {
   if (is_numeric($registration->author_uid)) {
-    $entity = entity_load_single('user', $registration->author_uid);
+    $entity = entity_load('user', $registration->author_uid);
     return entity_metadata_wrapper('user', $entity);
   }
 }
@@ -1783,7 +1783,7 @@ function registration_property_author_get(Registration $registration, array $opt
  */
 function registration_property_user_get(Registration $registration, array $options, $property_name, $entity_type) {
   if (is_numeric($registration->user_uid)) {
-    $entity = entity_load_single('user', $registration->user_uid);
+    $entity = entity_load('user', $registration->user_uid);
     return entity_metadata_wrapper('user', $entity);
   }
 }
@@ -1880,7 +1880,7 @@ function registration_load_multiple($registration_ids = array(), $conditions = a
     return array();
   }
 
-  return entity_load('registration', $registration_ids, $conditions, $reset);
+  return entity_load_multiple('registration', $registration_ids, $conditions, $reset);
 }
 
 /**

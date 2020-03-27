@@ -143,7 +143,7 @@ function registration_form($form, &$form_state, Registration $registration) {
     '#type' => 'select',
     '#title' => t('State'),
     '#description' => t('State of this registration'),
-    '#default_value' => ($state ? $state->identifier() : $default_state->identifier()),
+    '#default_value' => ($state ? $state->id() : $default_state->id()),
     '#options' => $states,
     '#access' => !empty($states) && user_access('edit ' . $registration->type . ' registration state'),
   );
@@ -190,7 +190,7 @@ function registration_form_validate($form, &$form_state) {
   $count = $form_state['values']['count'];
 
   $label = entity_label($registration->entity_type,
-    entity_load_single($registration->entity_type, $registration->entity_id));
+    entity_load($registration->entity_type, $registration->entity_id));
 
   // Test status on new registrations.
   if (isset($registration->is_new) && $registration->is_new) {
@@ -334,7 +334,7 @@ function registration_form_submit($form, &$form_state) {
     // Make sure to Start a Session and save the registration info so we
     // can check it for anonymous user access.
     backdrop_session_start();
-    $_SESSION['registration_ids'][$registration->identifier()] = $wrapper->anon_access_hash->value();
+    $_SESSION['registration_ids'][$registration->id()] = $wrapper->anon_access_hash->value();
   }
   else {
     backdrop_set_message(t('There was a problem submitting your registration.'));
@@ -472,7 +472,7 @@ function registration_broadcast_preview($form, &$form_state) {
   $entity_type = $form_state['entity']['entity_type'];
   $entity_id = $form_state['entity']['entity_id'];
   $message_template = $form_state['values']['message'];
-  $entity = entity_load_single($entity_type, $entity_id);
+  $entity = entity_load($entity_type, $entity_id);
   if (module_exists('token')) {
     $message = token_replace($message_template, array($entity_type => $entity));
   }
@@ -795,7 +795,7 @@ function registration_entity_settings_form_submit($form, &$form_state) {
 
   registration_update_entity_settings($entity['entity_type'], $entity['entity_id'], $fields);
 
-  $uri = entity_uri($entity['entity_type'], entity_load_single($entity['entity_type'], $entity['entity_id']));
+  $uri = entity_uri($entity['entity_type'], entity_load($entity['entity_type'], $entity['entity_id']));
 
   $form_state['redirect'] = $uri['path'];
 }
@@ -853,7 +853,7 @@ function registration_state_form($form, &$form_state, $registration_state, $op =
   // Machine-readable type name.
   $form['name'] = array(
     '#type' => 'machine_name',
-    '#default_value' => $registration_state->identifier(),
+    '#default_value' => $registration_state->id(),
     '#maxlength' => 32,
     //'#disabled' => $registration_state->locked && $op != 'clone',
     '#machine_name' => array(
@@ -925,6 +925,7 @@ function registration_state_form_submit(&$form, &$form_state) {
 function registration_state_overview_form($form, &$form_state) {
   $registration_states = registration_states();
 
+dpm($registration_states);
   // Form elements for existing states .
   $form['state']['#tree'] = TRUE;
   if (!empty($registration_states)) {
@@ -980,11 +981,11 @@ function registration_state_overview_form($form, &$form_state) {
       );
       $form['state'][$sid]['delete'] = array(
         '#type' => 'item',
-        '#markup' => l(t('delete'), 'admin/structure/registration/registration_states/manage/' . $state->identifier() . '/delete', array('query' => backdrop_get_destination())),
+        '#markup' => l(t('delete'), 'admin/structure/registration/registration_states/manage/' . $state->id() . '/delete', array('query' => backdrop_get_destination())),
       );
       $form['state'][$sid]['export'] = array(
         '#type' => 'item',
-        '#markup' => l(t('export'), 'admin/structure/registration/registration_states/manage/' . $state->identifier() . '/export'),
+        '#markup' => l(t('export'), 'admin/structure/registration/registration_states/manage/' . $state->id() . '/export'),
       );
     }
   }
@@ -1021,7 +1022,7 @@ function registration_state_overview_form_submit($form, &$form_state) {
 
   $default_state = $form_state['values']['default_state'];
   foreach ($form_state['input']['state'] as $state) {
-    $registration_state = entity_load_single('registration_state', $state['sid']);
+    $registration_state = entity_load('registration_state', $state['sid']);
     $registration_state->label = $state['label'];
     $registration_state->default_state = $state['sid'] == $default_state;
     $registration_state->active = isset($state['active']) ? $state['active'] : 0;

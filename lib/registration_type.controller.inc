@@ -4,7 +4,7 @@
  * @file
  * The controller class used for registration type entities
  */
-class RegistrationTypeController extends EntityAPIControllerExportable {
+class RegistrationTypeController extends EntityPlusControllerExportable {
 
   /**
    * Overridden.

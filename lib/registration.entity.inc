@@ -172,7 +172,7 @@ class Registration extends Entity {
     if (!$state) {
       $default_state = registration_get_default_state($wrapper->getBundle());
       if ($default_state) {
-        $this->state = $default_state->identifier();
+        $this->state = $default_state->id();
       }
     }
 
@@ -188,7 +188,7 @@ class Registration extends Entity {
    * Specify URI.
    */
   protected function defaultUri() {
-    return array('path' => 'registration/' . $this->internalIdentifier());
+    return array('path' => 'registration/' . $this->id());
   }
 
   /**
@@ -214,6 +214,34 @@ class Registration extends Entity {
       $reg_type = REGISTRATION_REGISTRANT_TYPE_ANON;
     }
     return $reg_type;
+  }
+
+  /**
+   * Implements EntityInterface::id().
+   */
+  public function id() {
+    return $this->registration_id;
+  }
+
+  /**
+   * Implements EntityInterface::entityType().
+   */
+  public function entityType() {
+    return 'registration';
+  }
+
+  /**
+   * Implements EntityInterface::label().
+   */
+  public function label() {
+    return $this->registration_id;
+  }
+
+  /**
+   * Implements EntityInterface::uri().
+   */
+  public function uri() {
+    return array();
   }
 
 }
