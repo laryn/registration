@@ -163,7 +163,7 @@ class Registration extends Entity {
   /**
    * Save registration.
    *
-   * @see entity_save()
+   * @see entity_plus_save()
    */
   public function save() {
     // Set a default state if not provided.

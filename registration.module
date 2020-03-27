@@ -40,7 +40,7 @@ function registration_entity_info() {
     'registration' => array(
       'label' => t('Registration'),
       'plural label' => t('Registrations'),
-      'controller class' => 'EntityAPIController',
+      'controller class' => 'EntityPlusController',
       'entity class' => 'Registration',
       'metadata controller class' => 'RegistrationMetadataController',
       'base table' => 'registration',
@@ -961,7 +961,7 @@ function registration_entity_delete($entity, $entity_type) {
           $entities = entity_load_multiple($host_entity_type, array_keys($entities));
           foreach ($entities as $entity_id => $host_entity) {
             $host_entity->{$field_name}[LANGUAGE_NONE][0] = NULL;
-            entity_save($host_entity_type, $host_entity);
+            entity_plus_save($host_entity_type, $host_entity);
           }
         }
       }
@@ -1389,11 +1389,14 @@ function registration_get_registration_instances($params = array()) {
 
   $registration_instances = array();
   if (!empty($registration_fields)) {
-    $field_name = array(
-      'field_name' => array_keys($registration_fields),
-    );
-    $params = array_merge($field_name, $params);
-    $registration_instances = field_read_instances($params);
+    foreach (array_keys($registration_fields) as $field_name) {
+      $field_name = array(
+        'field_name' => $field_name,
+      );
+      $params = array_merge($field_name, $params);
+      $registration_instance = field_read_instances($params);
+      $registration_instances += $registration_instance;
+    }
   }
 
   return $registration_instances;

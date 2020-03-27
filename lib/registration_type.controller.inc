@@ -5,6 +5,7 @@
  * The controller class used for registration type entities
  */
 class RegistrationTypeController extends EntityPlusControllerExportable {
+  protected $cache;
 
   /**
    * Overridden.

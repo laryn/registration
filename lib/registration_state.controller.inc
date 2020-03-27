@@ -5,6 +5,7 @@
  * The controller class used for registration state entities
  */
 class RegistrationStateController extends EntityPlusController {
+  protected $cache;
 
   public function save($entity, DatabaseTransaction $transaction = NULL) {
     parent::save($entity, $transaction);

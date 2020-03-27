@@ -925,7 +925,6 @@ function registration_state_form_submit(&$form, &$form_state) {
 function registration_state_overview_form($form, &$form_state) {
   $registration_states = registration_states();
 
-dpm($registration_states);
   // Form elements for existing states .
   $form['state']['#tree'] = TRUE;
   if (!empty($registration_states)) {
