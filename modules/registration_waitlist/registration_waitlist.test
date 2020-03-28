@@ -5,6 +5,8 @@
  * Tests for the Registration Wait List module
  */
 
+require_once backdrop_get_path('module', 'registration') . '/tests/registration.test';
+
 /**
  * Creates a registration type
  * Create node entity type
@@ -20,7 +22,7 @@ class RegistrationWaitlistTestCase extends RegistrationTestCase {
   }
 
   function setUp() {
-    parent::setUp(array('registration_waitlist'));
+    parent::setUp(array('registration', 'registration_waitlist'));
     $this->setUpEntity();
   }
 
@@ -35,14 +37,14 @@ class RegistrationWaitlistTestCase extends RegistrationTestCase {
     );
 
     $this->checkPermissions($permissions, TRUE);
-    $basic_user = $this->drupalCreateUser($permissions);
+    $basic_user = $this->backdropCreateUser($permissions);
 
     $permissions = array(
       'administer ' . $this->registration_type_name . ' registration',
     );
 
     $this->checkPermissions($permissions, TRUE);
-    $admin_user = $this->drupalCreateUser($permissions);
+    $admin_user = $this->backdropCreateUser($permissions);
 
     // Start with the basic user.
     $user = $basic_user;
@@ -66,6 +68,7 @@ class RegistrationWaitlistTestCase extends RegistrationTestCase {
     $this->assertTrue(registration_status($this->host_entity_type, $this->host_entity_id, TRUE), t('Host entity status is opened, filled with registrations.'), 'Registration');
 
     $last_registration = entity_metadata_wrapper('registration', end($registrations));
+
     $this->assertTrue(($last_registration->state->name->value() === REGISTRATION_WAITLIST_STATE), t('Last registration placed on wait list.'), 'Registration');
 
     // Test that wait list limit and reserved slots is enforced.
