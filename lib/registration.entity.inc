@@ -190,7 +190,10 @@ class Registration extends Entity {
    * Specify URI.
    */
   protected function defaultUri() {
-    return array('path' => 'registration/' . $this->id());
+    return array(
+      'path' => 'registration/' . $this->id(),
+      'options' => array(),
+    );
   }
 
   /**
