@@ -1,5 +1,4 @@
 <?php
-
 /**
  * @file
  * Module file for registrations.
@@ -149,6 +148,65 @@ function registration_entity_info_alter(&$entity_info) {
       }
     }
   }
+}
+
+/**
+ * Implements hook_block_info().
+ */
+function registration_block_info() {
+  $blocks['form'] = array(
+    'info' => t('Registration form'),
+    'cache' => DRUPAL_NO_CACHE,
+  );
+
+  return $blocks;
+}
+
+/**
+ * Implements hook_block_configure().
+ */
+function registration_block_configure($delta = '', $settings = array()) {
+  $form = array();
+  if ($delta == 'form') {
+    $info = entity_get_info();
+    $entity_options = array();
+    foreach ($info as $machine => $type) {
+      $entity_options[$machine] = $type['label'];
+    }
+    $form['entity_type'] = array(
+      '#type' => 'select',
+      '#title' => t('Entity Type'),
+      '#options' => $entity_options,
+      '#default_value' => isset($settings['entity_type']) ? $settings['entity_type'] : '',
+    );
+    $form['entity_id'] = array(
+      '#type' => 'number',
+      '#title' => t('Entity ID'),
+      '#min' => 0,
+      '#default_value' => isset($settings['entity_id']) ? $settings['entity_id'] : '',
+    );
+  }
+  return $form;
+}
+
+/**
+ * Implements hook_block_view().
+ */
+function registration_block_view($delta = '', $settings = array(), $contexts = array()) {
+  $block = array();
+
+  switch ($delta) {
+    case 'form':
+      $entity_type = $settings['entity_type'];
+      $entity = entity_load($entity_type, $settings['entity_id']);
+      if (registration_register_page_access($entity_type, $entity)) {
+        $block['subject'] = t('Register Now');
+        $block['content'] = registration_register_page($entity_type, $entity);
+      }
+      break;
+  }
+
+  return $block;
 }
 
 /**
