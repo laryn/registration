@@ -571,16 +571,25 @@ function registration_page_title(Registration $registration) {
 function registration_register_page_access($entity_type, $entity) {
   list($entity_id) = entity_extract_ids($entity_type, $entity);
 
-  if ($type = registration_get_entity_registration_type($entity_type, $entity)) {
-    $registration = entity_get_controller('registration')->create(array(
-      'entity_type' => $entity_type,
-      'entity_id' => $entity_id,
-      'type' => $type,
-    ));
-    if (entity_access('create', 'registration', $registration)) {
-      $settings = registration_entity_settings($entity_type, $entity_id);
-      if ($settings['status']) {
-        return TRUE;
+  $entities = array($entity_id => $entity);
+
+  if (module_exists('translation')) {
+    $translation_entity = entity_load($entity_type, $entity->tnid);
+    $entities[$entity->tnid] = $translation_entity;
+  }
+
+  foreach ($entities as $entity_id => $entity) {
+    if ($type = registration_get_entity_registration_type($entity_type, $entity)) {
+      $registration = entity_get_controller('registration')->create(array(
+        'entity_type' => $entity_type,
+        'entity_id' => $entity_id,
+        'type' => $type,
+      ));
+      if (entity_access('create', 'registration', $registration)) {
+        $settings = registration_entity_settings($entity_type, $entity_id);
+        if ($settings['status']) {
+          return TRUE;
+        }
       }
     }
   }
@@ -644,6 +653,18 @@ function registration_register_page($entity_type, $entity) {
       'type' => $registration_type,
     ));
     return backdrop_get_form('registration_form', $registration);
+  }
+  elseif (module_exists('translation')) {
+    $translation_entity = entity_load($entity_type, $entity->tnid);
+    if (registration_status($entity_type, $entity->tnid)) {
+      $registration_type = registration_get_entity_registration_type($entity_type, $translation_entity);
+      $registration = entity_get_controller('registration')->create(array(
+        'entity_type' => $entity_type,
+        'entity_id' => $entity->tnid,
+        'type' => $registration_type,
+      ));
+      return backdrop_get_form('registration_form', $registration);
+    }
   }
   else {
     return t('Sorry, registrations are no longer available for %name',
