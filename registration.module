@@ -372,7 +372,11 @@ function registration_config_info() {
  * Implements hook_admin_paths().
  */
 function registration_admin_paths() {
-  $paths = array();
+  $paths = array(
+    'registration/*' => TRUE,
+    'registration/*/edit' => TRUE,
+    'registration/*/delete' => TRUE,
+  );
   if (config_get('registration.settings', 'registration_paths_administrative')) {
     foreach (registration_get_registration_instances() as $instance) {
       $type = $instance['entity_type'];
