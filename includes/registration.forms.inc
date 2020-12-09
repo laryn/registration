@@ -420,7 +420,7 @@ function registration_registrations_broadcast_form($form, &$form_state, $entity_
     '#type' => 'textarea',
     '#title' => t('Message'),
     '#description' => t(
-      'Enter the message you want to send to %name registrants. Tokens are supported if the module is enabled, E.g., [node:title].',
+      'Enter the message you want to send to %name registrants. Tokens are supported, E.g., [node:title].',
       array('%name' => entity_label($entity_type, $entity))
     ),
     '#required' => TRUE,
@@ -440,16 +440,14 @@ function registration_registrations_broadcast_form($form, &$form_state, $entity_
   }
 
   // Add token support:
-  if (module_exists('token')) {
-    $form['token_tree'] = array(
-      '#theme' => 'token_tree_link',
-      '#token_types' => array(
-        $entity_type,
-        'registration',
-      ),
-      '#global_types' => FALSE,
-    );
-  }
+  $form['token_tree'] = array(
+    '#theme' => 'token_tree_link',
+    '#token_types' => array(
+      $entity_type,
+      'registration',
+    ),
+    '#global_types' => FALSE,
+  );
 
   $form['actions']['preview'] = array(
     '#type' => 'submit',
@@ -475,9 +473,7 @@ function registration_broadcast_preview($form, &$form_state) {
   $entity_id = $form_state['entity']['entity_id'];
   $message_template = $form_state['values']['message'];
   $entity = entity_load($entity_type, $entity_id);
-  if (module_exists('token')) {
-    $message = token_replace($message_template, array($entity_type => $entity));
-  }
+  $message = token_replace($message_template, array($entity_type => $entity));
 
   $form_state['registration_broadcast_preview'] = $message;
   $form_state['rebuild'] = TRUE;
@@ -634,20 +630,18 @@ function registration_entity_settings_form($form, &$form_state, $settings, $enti
     '#type' => 'textarea',
     '#title' => t('Template'),
     '#default_value' => isset($settings['reminder_template']) ? $settings['reminder_template'] : '',
-    '#description' => t('The reminder message sent to registrants. Tokens are supported if the module is enabled, E.g., [node:title].'),
+    '#description' => t('The reminder message sent to registrants. Tokens are supported, E.g., [node:title].'),
   );
 
   // Add token support:
-  if (module_exists('token')) {
-    $form['reminder']['reminder_settings']['token_tree'] = array(
-      '#theme' => 'token_tree_link',
-      '#token_types' => array(
-        $entity_type,
-        'registration',
-      ),
-      '#global_types' => FALSE,
-    );
-  }
+  $form['reminder']['reminder_settings']['token_tree'] = array(
+    '#theme' => 'token_tree_link',
+    '#token_types' => array(
+      $entity_type,
+      'registration',
+    ),
+    '#global_types' => FALSE,
+  );
 
   $form['settings'] = array(
     '#type' => 'fieldset',
