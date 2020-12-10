@@ -475,9 +475,20 @@ function registration_broadcast_preview($form, &$form_state) {
   $entity_id = $form_state['entity']['entity_id'];
   $message_template = $form_state['values']['message'];
   $entity = entity_load($entity_type, $entity_id);
-  if (module_exists('token')) {
-    $message = token_replace($message_template, array($entity_type => $entity));
+
+  // Select one registration at random.
+  $registration = array();
+  $registration_type = registration_get_entity_registration_type($entity_type, $entity);
+  $query = "SELECT registration_id FROM {registration} WHERE type = :type LIMIT 1";
+  $registration_id = db_query($query, array(':type' => $registration_type))->fetchField();
+  if ($registration_id) {
+    $registration = entity_load('registration', $registration_id);
   }
+  $data = array(
+    $entity_type => $entity,
+    'registration' => $registration,
+  );
+  $message = token_replace($message_template, $data);
 
   $form_state['registration_broadcast_preview'] = $message;
   $form_state['rebuild'] = TRUE;
