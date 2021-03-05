@@ -1436,13 +1436,18 @@ function registration_token_info() {
     'description' => t('Tokens related to individual Registrations.'),
     'needs-data' => 'registration',
   );
+  $registration['email'] = array(
+    'name' => t('Registration Email'),
+    'description' => t('The email address for the person registered.'),
+    'type' => 'registration',
+  );
   $registration['entity'] = array(
-    'name' => t("Registration Host Entity"),
-    'description' => t("The host entity for the registration."),
+    'name' => t('Registration Host Entity'),
+    'description' => t('The host entity for the registration.'),
   );
   $registration['user'] = array(
-    'name' => t("Registration User"),
-    'description' => t("The user the registration is for."),
+    'name' => t('Registration User'),
+    'description' => t('The user the registration is for'),
     'type' => 'user',
   );
 
@@ -1460,6 +1465,19 @@ function registration_tokens($type, $tokens, array $data = array(), array $optio
     $registration = $data['registration'];
     $wrapper = entity_metadata_wrapper('registration', $data['registration']);
     $replacements = array();
+
+    foreach ($tokens as $name => $original) {
+      if ($name == 'email') {
+        if ($registration->user_uid == 0) {
+          $email = $registration->anon_mail;
+        }
+        else {
+          $query = "SELECT mail FROM {users} WHERE uid = :uid";
+          $email = db_query($query, array(':uid' => $registration->user_uid))->fetchField();
+        }
+        $replacements[$original] = $email;
+      }
+    }
 
     if ($entity_tokens = token_find_with_prefix($tokens, 'entity')) {
       $entity = $wrapper->entity->value();
