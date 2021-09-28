@@ -44,8 +44,7 @@ class Registration extends Entity {
    *   Render array for a registration entity.
    */
   public function buildContent($view_mode = 'full', $langcode = NULL) {
-    // $build = parent::buildContent($view_mode, $langcode);
-    //$build = entity_get_controller('registration')->buildContent($this, $view_mode, $langcode);
+    $build = entity_get_controller('registration')->buildContent($this, $view_mode, $langcode);
     $wrapper = entity_metadata_wrapper('registration', $this);
 
     $host_entity_type_info = entity_get_info($this->entity_type);
