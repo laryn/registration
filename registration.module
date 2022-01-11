@@ -1377,7 +1377,7 @@ function registration_status($entity_type, $entity_id, $reset = FALSE, $spaces =
     // check close date range
     if (isset($close) && ($now >= $close)) {
       $status = FALSE;
-      $errors[] = t('Registration is closed.');
+      $errors[] = t('Registration close date has passed.');
     }
   }
   else {
