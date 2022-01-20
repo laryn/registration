@@ -479,7 +479,7 @@ function registration_registrations_broadcast_form($form, &$form_state, $entity_
     '#type' => 'textarea',
     '#title' => t('Message'),
     '#description' => t(
-      'Enter the message you want to send to %name registrants. Tokens are supported if the module is enabled, E.g., [node:title].',
+      'Enter the message you want to send to %name registrants. Tokens are supported, E.g., [node:title].',
       array('%name' => entity_label($entity_type, $entity))
     ),
     '#required' => TRUE,
@@ -499,16 +499,14 @@ function registration_registrations_broadcast_form($form, &$form_state, $entity_
   }
 
   // Add token support:
-  if (module_exists('token')) {
-    $form['token_tree'] = array(
-      '#theme' => 'token_tree_link',
-      '#token_types' => array(
-        $entity_type,
-        'registration',
-      ),
-      '#global_types' => FALSE,
-    );
-  }
+  $form['token_tree'] = array(
+    '#theme' => 'token_tree_link',
+    '#token_types' => array(
+      $entity_type,
+      'registration',
+    ),
+    '#global_types' => FALSE,
+  );
 
   $form['actions'] = array('#type' => 'actions');
   $form['actions']['preview'] = array(
@@ -756,7 +754,10 @@ function registration_entity_settings_form($form, &$form_state, $settings, $enti
   // Add token support:
   $form['reminder']['reminder_settings']['token_tree'] = array(
     '#theme' => 'token_tree_link',
-    '#token_types' => array($entity_type, 'registration'),
+    '#token_types' => array(
+      $entity_type,
+      'registration',
+    ),
     '#global_types' => FALSE,
   );
 

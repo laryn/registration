@@ -1244,12 +1244,11 @@ function registration_send_broadcast($entity_type, $entity_id, $subject, $messag
       $recipients[] = $wrapper->mail->value();
 
       $entity = entity_load($entity_type, $entity_id);
-      if (module_exists('token')) {
-        $message = token_replace($message_template, array(
-          $entity_type => $entity,
-          'registration' => $registration,
-        ), array('clear' => TRUE));
-      }
+      $data = array(
+        $entity_type => $entity,
+        'registration' => $registration,
+      );
+      $message = token_replace($message_template, $data, array('clear' => TRUE));
       $params['message'] = $message;
 
       $result = backdrop_mail('registration', 'broadcast',
