@@ -51,8 +51,7 @@ class Registration extends Entity {
    *   Render array for a registration entity.
    */
   public function buildContent($view_mode = 'full', $langcode = NULL) {
-    // $build = parent::buildContent($view_mode, $langcode);
-    //$build = entity_get_controller('registration')->buildContent($this, $view_mode, $langcode);
+    $build = entity_get_controller('registration')->buildContent($this, $view_mode, $langcode);
     $wrapper = entity_metadata_wrapper('registration', $this);
 
     $host_entity_type_info = entity_get_info($this->entity_type);
@@ -259,7 +258,7 @@ class Registration extends Entity {
   /**
    * View a registration entity.
    */
-  public function view($view_mode) {
+  public function view($view_mode = 'full', $langcode = NULL, $page = NULL) {
     return entity_get_controller('registration')->view(array($this), $view_mode);
   }
 

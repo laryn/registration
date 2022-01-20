@@ -1,5 +1,4 @@
 <?php
-
 /**
  * @file
  * Module file for registrations.
@@ -149,6 +148,65 @@ function registration_entity_info_alter(&$entity_info) {
       }
     }
   }
+}
+
+/**
+ * Implements hook_block_info().
+ */
+function registration_block_info() {
+  $blocks['form'] = array(
+    'info' => t('Registration form'),
+    'cache' => DRUPAL_NO_CACHE,
+  );
+
+  return $blocks;
+}
+
+/**
+ * Implements hook_block_configure().
+ */
+function registration_block_configure($delta = '', $settings = array()) {
+  $form = array();
+  if ($delta == 'form') {
+    $info = entity_get_info();
+    $entity_options = array();
+    foreach ($info as $machine => $type) {
+      $entity_options[$machine] = $type['label'];
+    }
+    $form['entity_type'] = array(
+      '#type' => 'select',
+      '#title' => t('Entity Type'),
+      '#options' => $entity_options,
+      '#default_value' => isset($settings['entity_type']) ? $settings['entity_type'] : '',
+    );
+    $form['entity_id'] = array(
+      '#type' => 'number',
+      '#title' => t('Entity ID'),
+      '#min' => 0,
+      '#default_value' => isset($settings['entity_id']) ? $settings['entity_id'] : '',
+    );
+  }
+  return $form;
+}
+
+/**
+ * Implements hook_block_view().
+ */
+function registration_block_view($delta = '', $settings = array(), $contexts = array()) {
+  $block = array();
+
+  switch ($delta) {
+    case 'form':
+      $entity_type = $settings['entity_type'];
+      $entity = entity_load($entity_type, $settings['entity_id']);
+      if (registration_register_page_access($entity_type, $entity)) {
+        $block['subject'] = t('Register Now');
+        $block['content'] = registration_register_page($entity_type, $entity);
+      }
+      break;
+  }
+
+  return $block;
 }
 
 /**
@@ -372,7 +430,11 @@ function registration_config_info() {
  * Implements hook_admin_paths().
  */
 function registration_admin_paths() {
-  $paths = array();
+  $paths = array(
+    'registration/*' => TRUE,
+    'registration/*/edit' => TRUE,
+    'registration/*/delete' => TRUE,
+  );
   if (config_get('registration.settings', 'registration_paths_administrative')) {
     foreach (registration_get_registration_instances() as $instance) {
       $type = $instance['entity_type'];
@@ -571,16 +633,25 @@ function registration_page_title(Registration $registration) {
 function registration_register_page_access($entity_type, $entity) {
   list($entity_id) = entity_extract_ids($entity_type, $entity);
 
-  if ($type = registration_get_entity_registration_type($entity_type, $entity)) {
-    $registration = entity_get_controller('registration')->create(array(
-      'entity_type' => $entity_type,
-      'entity_id' => $entity_id,
-      'type' => $type,
-    ));
-    if (entity_access('create', 'registration', $registration)) {
-      $settings = registration_entity_settings($entity_type, $entity_id);
-      if ($settings['status']) {
-        return TRUE;
+  $entities = array($entity_id => $entity);
+
+  if (module_exists('translation')) {
+    $translation_entity = entity_load($entity_type, $entity->tnid);
+    $entities[$entity->tnid] = $translation_entity;
+  }
+
+  foreach ($entities as $entity_id => $entity) {
+    if ($type = registration_get_entity_registration_type($entity_type, $entity)) {
+      $registration = entity_get_controller('registration')->create(array(
+        'entity_type' => $entity_type,
+        'entity_id' => $entity_id,
+        'type' => $type,
+      ));
+      if (entity_access('create', 'registration', $registration)) {
+        $settings = registration_entity_settings($entity_type, $entity_id);
+        if ($settings['status']) {
+          return TRUE;
+        }
       }
     }
   }
@@ -644,6 +715,18 @@ function registration_register_page($entity_type, $entity) {
       'type' => $registration_type,
     ));
     return backdrop_get_form('registration_form', $registration);
+  }
+  elseif (module_exists('translation')) {
+    $translation_entity = entity_load($entity_type, $entity->tnid);
+    if (registration_status($entity_type, $entity->tnid)) {
+      $registration_type = registration_get_entity_registration_type($entity_type, $translation_entity);
+      $registration = entity_get_controller('registration')->create(array(
+        'entity_type' => $entity_type,
+        'entity_id' => $entity->tnid,
+        'type' => $registration_type,
+      ));
+      return backdrop_get_form('registration_form', $registration);
+    }
   }
   else {
     return t('Sorry, registrations are no longer available for %name',
@@ -1351,7 +1434,7 @@ function registration_status($entity_type, $entity_id, $reset = FALSE, $spaces =
     // check close date range
     if (isset($close) && ($now >= $close)) {
       $status = FALSE;
-      $errors[] = t('Registration is closed.');
+      $errors[] = t('Registration close date has passed.');
     }
   }
   else {
@@ -1435,13 +1518,18 @@ function registration_token_info() {
     'description' => t('Tokens related to individual Registrations.'),
     'needs-data' => 'registration',
   );
+  $registration['email'] = array(
+    'name' => t('Registration Email'),
+    'description' => t('The email address for the person registered.'),
+    'type' => 'registration',
+  );
   $registration['entity'] = array(
-    'name' => t("Registration Host Entity"),
-    'description' => t("The host entity for the registration."),
+    'name' => t('Registration Host Entity'),
+    'description' => t('The host entity for the registration.'),
   );
   $registration['user'] = array(
-    'name' => t("Registration User"),
-    'description' => t("The user the registration is for."),
+    'name' => t('Registration User'),
+    'description' => t('The user the registration is for'),
     'type' => 'user',
   );
 
@@ -1459,6 +1547,19 @@ function registration_tokens($type, $tokens, array $data = array(), array $optio
     $registration = $data['registration'];
     $wrapper = entity_metadata_wrapper('registration', $data['registration']);
     $replacements = array();
+
+    foreach ($tokens as $name => $original) {
+      if ($name == 'email') {
+        if ($registration->user_uid == 0) {
+          $email = $registration->anon_mail;
+        }
+        else {
+          $query = "SELECT mail FROM {users} WHERE uid = :uid";
+          $email = db_query($query, array(':uid' => $registration->user_uid))->fetchField();
+        }
+        $replacements[$original] = $email;
+      }
+    }
 
     if ($entity_tokens = token_find_with_prefix($tokens, 'entity')) {
       $entity = $wrapper->entity->value();
