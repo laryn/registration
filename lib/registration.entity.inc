@@ -23,7 +23,7 @@ class Registration extends Entity {
     $updated;
 
   /**
-   * Specifies the default label, which is picked up by label() by default.
+   * Implements EntityInterface::access().
    */
   public function access($op, $account = NULL) {
     return registration_access($op, $this, $account);
