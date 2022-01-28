@@ -23,14 +23,6 @@ function registration_views_views_data() {
 
   // Registration
   $entity_info = entity_get_info('registration');
-  $data['registration']['table']['group']  = t('Registrations');
-  $data['registration']['table']['entity type'] = 'registration';
-  $data['registration']['table']['base'] = array(
-    'field' => $entity_info['entity keys']['id'],
-    'access query tag' => 'registration_access',
-    'title' => $label = t('Registrations'),
-  );
-
   $property_info = entity_plus_get_all_property_info('registration');
   foreach ($property_info as $property => $settings) {
     if (isset($settings['schema field']) && in_array($settings['schema field'], $entity_info['schema_fields_sql']['base table'])) {
