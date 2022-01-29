@@ -63,7 +63,8 @@ function registration_entity_info() {
       'token type' => 'registration',
       'module' => 'registration',
       'label callback' => 'entity_class_label',
-      'entity cache' => module_exists('entitycache'),
+      'entity cache' => TRUE,
+      'field cache' => FALSE,
     ),
     'registration_type' => array(
       'label' => t('Registration type'),
@@ -87,7 +88,8 @@ function registration_entity_info() {
         'file path' => backdrop_get_path('module', 'registration') . '/includes',
         'controller class' => 'RegistrationTypeUIController',
       ),
-      'entity cache' => module_exists('entitycache'),
+      'entity cache' => TRUE,
+      'field cache' => FALSE,
     ),
     'registration_state' => array(
       'label' => t('Registration State'),
@@ -116,7 +118,8 @@ function registration_entity_info() {
       'module' => 'registration',
       'access callback' => 'registration_state_access',
       'exportable' => TRUE,
-      'entity cache' => module_exists('entitycache'),
+      'entity cache' => TRUE,
+      'field cache' => FALSE,
     ),
   );
 
