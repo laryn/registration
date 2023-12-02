@@ -42,7 +42,7 @@ function registration_field_info() {
         ),
       ),
       'default_widget' => 'registration_select',
-      'default_formatter' => 'registration_default',
+      'default_formatter' => 'registration_link',
       'no_ui' => FALSE,
     ),
   );
