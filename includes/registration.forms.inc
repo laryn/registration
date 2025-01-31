@@ -393,11 +393,13 @@ function registration_send_confirmation($form, &$form_state) {
         'subject' => $subject,
         'message' => $message,
       );
+      if (!empty($settings['settings']['from_address'])) {
+        $params['from'] = $settings['settings']['from_address'];
+      }
       global $language;
-      $from = $settings['settings']['from_address'];
 
       // Send the confirmation email.
-      backdrop_mail('registration', 'confirmation', $email, $language, $params, $from);
+      backdrop_mail('registration', 'confirmation', $email, $language, $params);
     }
   }
 }
