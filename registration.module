@@ -424,9 +424,10 @@ function registration_own_access($action, $registration, $hash = NULL) {
  */
 function registration_config_info() {
   $prefixes['registration.settings'] = array(
-    'label' => t('Module name settings'),
+    'label' => t('Registration settings'),
     'group' => t('Configuration'),
   );
+  return $prefixes;
 }
 
 /**
