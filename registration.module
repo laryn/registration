@@ -1849,8 +1849,8 @@ function registration_get_default_state($type = NULL) {
  *   If set, the type with the given name is returned.
  */
 function registration_get_states($name = NULL) {
-  $types = entity_load_multiple_by_name('registration_state', isset($name) ? array($name) : FALSE);
-  return isset($name) ? reset($types) : $types;
+  $types = entity_load_multiple_by_name('registration_state', FALSE);
+  return (isset($name) && !empty($types[$name])) ? $types[$name] : $types;
 }
 
 /**
