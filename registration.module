@@ -1172,6 +1172,8 @@ function registration_mail($key, &$message, $params) {
   $body = $params['message'];
   $message['subject'] .= str_replace(array("\r", "\n"), '', $subject);
   $message['body'][] = backdrop_html_to_text($body);
+  $message['from'] = $params['from'];
+  $message['headers']['From'] = $params['from'];
 }
 
 /**
