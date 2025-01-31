@@ -1504,8 +1504,8 @@ function registration_get_registration_instances($params = array()) {
       $field_name = array(
         'field_name' => $field_name,
       );
-      $params = array_merge($field_name, $params);
-      $registration_instance = field_read_instances($params);
+      $params_copy = array_merge($field_name, $params);
+      $registration_instance = field_read_instances($params_copy);
       $registration_instances += $registration_instance;
     }
   }
