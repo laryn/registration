@@ -2281,7 +2281,7 @@ function registration_form_alter(&$form, &$form_state, $form_id) {
   }
 
   // Add validation handler for registration forms.
-  if ($form_id === 'registration_form') {
+  if ($form_id === 'registration_form' && !empty($form_state['field'])) {
     $value_per_space = FALSE;
     foreach ($form_state['field'] as $field_name => $field_settings) {
       if (isset($field_settings[LANGUAGE_NONE]['instance']['settings']['value_per_space'])) {
